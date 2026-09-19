@@ -1,0 +1,12 @@
+{
+  "name": "com.awsurmi.utilitypackage",
+  "displayName": "AW.SUR.MI.74 Utilities",
+  "version": "1.0.0",
+  "unity": "6000.0",
+  "description": "Utility package to help in development",
+  "keywords": ["upm", "package"],
+  "author": {
+    "name": "AW.SUR.MI.74",
+    "email": "mibm2574@gmail.com"
+  }
+}
