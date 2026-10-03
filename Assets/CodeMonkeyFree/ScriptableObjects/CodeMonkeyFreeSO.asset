@@ -14,42 +14,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.00
   subtype: lunarLanderFree
-  lastShownTimestamp: 1789814312
+  lastShownTimestamp: 1791006148
   lastUpdateResponse:
     version: 1.00
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1789814312
+  checkedLastUpdateTimestamp: 1791006148
   lastQOTDResponse:
-    questionId: 344
-    questionText: 'What will be the value of isOne?
+    questionId: 348
+    questionText: 'Let''s say I saved my game data in a text file and I am now trying to load it, does this work?
 
-      <p>float oneThird = 1f / 3f;</p>
+      <p>string savedHealthData = "100";</p>
 
-      <p>bool isOne = (oneThird * 3f) == 1f;</p>'
-    answerA: true
-    answerB: false
-    answerC: 
+      <p>int healthAmount = savedHealthData;</p>'
+    answerA: Yes
+    answerB: No
+    answerC: Yes but healthAmount will be 0
     answerD: 
     answerE: 
-  lastQotdTimestamp: 1789814312
+  lastQotdTimestamp: 1791006148
   lastDynamicHeaderResponse:
     topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/codeMonkeyToolkit50Off.png
     topText: My Toolkit is 50% OFF! 50+ Tools and Elements to help you make games BETTER and FASTER!
     topLink: toolkit
     bottomText: Escape Tutorial Hell and level up your skills, try my Practice Lab for FREE!
     bottomLink: practicelab
-  lastDynamicHeaderTimestamp: 1789814312
+  lastDynamicHeaderTimestamp: 1791006148
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses! Click here!</a>
-  websiteLatestMessageTimestamp: 1789814312
+  websiteLatestMessageTimestamp: 1791006148
   websiteLatestVideos:
     videos:
-    - youTubeId: WFk_vADgnAo
-      title: TOP 10 NEW Games, Made with Unity! (AUGUST 2026)
-    - youTubeId: ndlWuuOw_zo
-      title: Get 70% OFF AWESOME Assets this Autumn!
-    - youTubeId: Wp9I5WhT2OE
-      title: Every Game you make should make your NEXT Game Easier!
-    - youTubeId: QNXgOuo7-Iw
-      title: TOP 10 FREE NEW Assets SEPTEMBER 2026!
-  websiteLatestVideosTimestamp: 1789814312
+    - youTubeId: TPNjjCOjxB4
+      title: How to Change Unity Graphics Settings Through Code! (Unity Tutorial)
+    - youTubeId: sA8mwU_-OXc
+      title: BEST NEW Visual Assets to INSPIRE YOU! (SEPTEMBER 2026)
+    - youTubeId: MotmZgCod9A
+      title: MASSIVE Unity Save System Tutorial!
+    - youTubeId: A9Qlll9dDkY
+      title: TOP 10 NEW Systems and Tools SEPTEMBER 2026! | Unity Asset Store
+  websiteLatestVideosTimestamp: 1791006148
