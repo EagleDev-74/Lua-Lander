@@ -1,10 +1,14 @@
 {
   "dependencies": {
     "com.awsurmi.utilitypackage": {
-      "version": "file:com.awsurmi.utilitypackage",
+      "version": "https://gitlab.com/aw.sur.mi.74/aw.sur.mi.74-utility.git",
       "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.unity.inputsystem": "1.20.0"
+      },
+      "hash": "b71726c0e6bfec484e6f0235d0ede9181f3242f6"
     },
     "com.unity.2d.animation": {
       "version": "16.0.0",
@@ -352,6 +356,14 @@
       "dependencies": {
         "com.unity.test-framework": "1.1.33",
         "com.unity.modules.jsonserialize": "1.0.0"
+      }
+    },
+    "com.unity.textmeshpro": {
+      "version": "5.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.ugui": "2.0.0"
       }
     },
     "com.unity.timeline": {
