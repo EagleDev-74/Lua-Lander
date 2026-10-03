@@ -1,8 +1,16 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class Lander : MonoBehaviour
 {
+    public event EventHandler OnUpForce;
+    public event EventHandler OnLeftForce;
+    public event EventHandler OnRightForce;
+    public event EventHandler OnBeforeForce;
+    
     [SerializeField] private float force = 700f;
     [SerializeField] private float turnSpeedLeft = +100f;
     [SerializeField] private float turnSpeedRight = -100f;
@@ -18,19 +26,24 @@ public class Lander : MonoBehaviour
 
     private void FixedUpdate ()
     {
+        OnBeforeForce?.Invoke(this, EventArgs.Empty);
+        
         if (Keyboard.current.wKey.isPressed)
         {
             _landerRigidBody2D.AddForce (transform.up * (force * Time.fixedDeltaTime));
+            OnUpForce?.Invoke(this, EventArgs.Empty);
         }
 
         if (Keyboard.current.aKey.isPressed)
         {
             _landerRigidBody2D.AddTorque (turnSpeedLeft * Time.fixedDeltaTime);
+            OnLeftForce?.Invoke(this, EventArgs.Empty);
         }
 
         if (Keyboard.current.dKey.isPressed)
         {
             _landerRigidBody2D.AddTorque (turnSpeedRight * Time.fixedDeltaTime);
+            OnRightForce?.Invoke(this, EventArgs.Empty);
         }
     }
 
