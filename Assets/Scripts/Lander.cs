@@ -36,7 +36,7 @@ public class Lander : MonoBehaviour
 
     private void OnCollisionEnter2D (Collision2D other)
     {
-        if (!other.gameObject.GetComponent <LandingPad> ())
+        if (!other.gameObject.TryGetComponent ( out LandingPad landingPad))
         {
             Debug.Log ("Crashed on the Terrain");
             return;
@@ -67,7 +67,10 @@ public class Lander : MonoBehaviour
         const float maxScoreAmountLandingSpeed = 100;
         float landingSpeedScore = (softLandingVelocityMagnitude - relativeVelocityMagnitude) * maxScoreAmountLandingSpeed;
 
-        Debug.Log ("Landing Angle : " + landingAngleScore);
-        Debug.Log ("Landing Speed : " + landingSpeedScore);
+        Debug.Log ("Landing Angle : ".Blue (bold:true) + landingAngleScore);
+        Debug.Log ("Landing Speed : ".Blue (bold:true) + landingSpeedScore);
+
+        int score = Mathf.RoundToInt(landingSpeedScore + landingAngleScore) * landingPad.GetScoreMultiplier ();
+        Debug.Log ("Score : ".Red (bold:true) + score);
     }
 }
