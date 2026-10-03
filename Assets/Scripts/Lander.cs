@@ -20,22 +20,42 @@ public class Lander : MonoBehaviour
     {
         
         
-        if (Keyboard.current.upArrowKey.isPressed)
+        if (Keyboard.current.wKey.isPressed)
         {
             _landerRigidBody2D.AddForce (transform.up * (force * Time.fixedDeltaTime));
-            Debug.Log ("Up");
         }
         
-        if (Keyboard.current.leftArrowKey.isPressed)
+        if (Keyboard.current.aKey.isPressed)
         {
             _landerRigidBody2D.AddTorque (turnSpeedLeft * Time.fixedDeltaTime);
-            Debug.Log ("Left");
         }
         
-        if (Keyboard.current.rightArrowKey.isPressed)
+        if (Keyboard.current.dKey.isPressed)
         {
             _landerRigidBody2D.AddTorque (turnSpeedRight * Time.fixedDeltaTime);
-            Debug.Log ("Right");
         }
+    }
+
+    private void OnCollisionEnter2D (Collision2D other)
+    {
+        float softLandingVelocityMagnitude = 4f;
+        
+        if (other.relativeVelocity.magnitude > softLandingVelocityMagnitude)
+        {
+            Debug.Log (" Landing to hard");
+            return;
+        }
+
+        float dotVector = Vector2.Dot (Vector2.up, transform.up);
+        float minDotVector = 0.90f;
+
+        if (dotVector < minDotVector)
+        {
+            Debug.Log("Landed on to steep angle");
+            return; 
+        }
+        Debug.Log (" Successful Landing");
+        
+        
     }
 }
