@@ -4,11 +4,19 @@ using UnityEngine.InputSystem;
 
 public class Lander : MonoBehaviour
 {
+    public static Lander Instance { get; private set; }
     public event EventHandler OnUpForce;
     public event EventHandler OnLeftForce;
     public event EventHandler OnRightForce;
     public event EventHandler OnBeforeForce;
-    
+    public event EventHandler OnCoinPickUp;
+    public event EventHandler <OnLandedEventArguments> OnLanded;
+
+    public class OnLandedEventArguments : EventArgs
+    {
+        public int score;
+    }
+
     [SerializeField] private float force = 700f;
     [SerializeField] private float turnSpeedLeft = +100f;
     [SerializeField] private float turnSpeedRight = -100f;
@@ -20,13 +28,14 @@ public class Lander : MonoBehaviour
 
     private void Awake ()
     {
+        Instance = this;
         _landerRigidBody2D = GetComponent <Rigidbody2D> ();
     }
 
     private void FixedUpdate ()
     {
-        OnBeforeForce?.Invoke(this, EventArgs.Empty);
-        
+        OnBeforeForce?.Invoke (this, EventArgs.Empty);
+
         if (Keyboard.current.wKey.isPressed || Keyboard.current.aKey.isPressed || Keyboard.current.dKey.isPressed)
         {
             // if any key is pressed
@@ -34,33 +43,33 @@ public class Lander : MonoBehaviour
         }
 
         if (_fuelAmount <= 0)
-        { 
+        {
             // no fuel
             return;
         }
-        
+
         if (Keyboard.current.wKey.isPressed)
         {
             _landerRigidBody2D.AddForce (transform.up * (force * Time.fixedDeltaTime));
-            OnUpForce?.Invoke(this, EventArgs.Empty);
+            OnUpForce?.Invoke (this, EventArgs.Empty);
         }
 
         if (Keyboard.current.aKey.isPressed)
         {
             _landerRigidBody2D.AddTorque (turnSpeedLeft * Time.fixedDeltaTime);
-            OnLeftForce?.Invoke(this, EventArgs.Empty);
+            OnLeftForce?.Invoke (this, EventArgs.Empty);
         }
 
         if (Keyboard.current.dKey.isPressed)
         {
             _landerRigidBody2D.AddTorque (turnSpeedRight * Time.fixedDeltaTime);
-            OnRightForce?.Invoke(this, EventArgs.Empty);
+            OnRightForce?.Invoke (this, EventArgs.Empty);
         }
     }
 
     private void OnCollisionEnter2D (Collision2D other)
     {
-        if (!other.gameObject.TryGetComponent ( out LandingPad landingPad))
+        if (!other.gameObject.TryGetComponent (out LandingPad landingPad))
         {
             Debug.Log ("Crashed on the Terrain");
             return;
@@ -86,27 +95,38 @@ public class Lander : MonoBehaviour
 
         const float maxScoreAmountLandingAngle = 100;
         const float scoreDotVectorMultiplayer = 10f;
-        float landingAngleScore = maxScoreAmountLandingAngle - Mathf.Abs (dotVector - 1f) * scoreDotVectorMultiplayer * maxScoreAmountLandingAngle;
+        float landingAngleScore = maxScoreAmountLandingAngle -
+                                  Mathf.Abs (dotVector - 1f) * scoreDotVectorMultiplayer * maxScoreAmountLandingAngle;
 
         const float maxScoreAmountLandingSpeed = 100;
-        float landingSpeedScore = (softLandingVelocityMagnitude - relativeVelocityMagnitude) * maxScoreAmountLandingSpeed;
+        float landingSpeedScore =
+            (softLandingVelocityMagnitude - relativeVelocityMagnitude) * maxScoreAmountLandingSpeed;
 
-        Debug.Log ("Landing Angle : ".Blue (bold:true) + landingAngleScore);
-        Debug.Log ("Landing Speed : ".Blue (bold:true) + landingSpeedScore);
+        Debug.Log ("Landing Angle : ".Blue (bold: true) + landingAngleScore);
+        Debug.Log ("Landing Speed : ".Blue (bold: true) + landingSpeedScore);
 
-        int score = Mathf.RoundToInt(landingSpeedScore + landingAngleScore) * landingPad.GetScoreMultiplier ();
-        Debug.Log ("Score : ".Red (bold:true) + score);
+        int score = Mathf.RoundToInt (landingSpeedScore + landingAngleScore) * landingPad.GetScoreMultiplier ();
+        Debug.Log ("Score : ".Red (bold: true) + score);
+        OnLanded?.Invoke (this, new OnLandedEventArguments
+        {
+            score = score,
+        });
     }
 
     private void OnTriggerEnter2D (Collider2D other)
     {
-        if (!other.gameObject.TryGetComponent (out FuelPickUp fuelPickUp)) return;
-        
-        const float addFuelAmount = 10f;
-        _fuelAmount += addFuelAmount;
-        fuelPickUp.DestroySelf ();
-        
-        
+        if (other.gameObject.TryGetComponent (out FuelPickUp fuelPickUp))
+        {
+            const float addFuelAmount = 10f;
+            _fuelAmount += addFuelAmount;
+            fuelPickUp.DestroySelf ();
+        }
+
+        if (other.gameObject.TryGetComponent (out CoinPickUp coinPickUp))
+        {
+            OnCoinPickUp?.Invoke (this, EventArgs.Empty);
+            coinPickUp.DestroySelf ();
+        }
     }
 
     private void FuelConsumption ()
