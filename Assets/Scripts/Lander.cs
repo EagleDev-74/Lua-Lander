@@ -1,7 +1,5 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class Lander : MonoBehaviour
@@ -14,6 +12,7 @@ public class Lander : MonoBehaviour
     [SerializeField] private float force = 700f;
     [SerializeField] private float turnSpeedLeft = +100f;
     [SerializeField] private float turnSpeedRight = -100f;
+    private float _fuelAmount = 10f;
 
 
     private Rigidbody2D _landerRigidBody2D;
@@ -27,6 +26,18 @@ public class Lander : MonoBehaviour
     private void FixedUpdate ()
     {
         OnBeforeForce?.Invoke(this, EventArgs.Empty);
+        
+        if (Keyboard.current.wKey.isPressed || Keyboard.current.aKey.isPressed || Keyboard.current.dKey.isPressed)
+        {
+            // if any key is pressed
+            FuelConsumption ();
+        }
+
+        if (_fuelAmount <= 0)
+        { 
+            // no fuel
+            return;
+        }
         
         if (Keyboard.current.wKey.isPressed)
         {
@@ -85,5 +96,22 @@ public class Lander : MonoBehaviour
 
         int score = Mathf.RoundToInt(landingSpeedScore + landingAngleScore) * landingPad.GetScoreMultiplier ();
         Debug.Log ("Score : ".Red (bold:true) + score);
+    }
+
+    private void OnTriggerEnter2D (Collider2D other)
+    {
+        if (!other.gameObject.TryGetComponent (out FuelPickUp fuelPickUp)) return;
+        
+        const float addFuelAmount = 10f;
+        _fuelAmount += addFuelAmount;
+        fuelPickUp.DestroySelf ();
+        
+        
+    }
+
+    private void FuelConsumption ()
+    {
+        float fuelConsumption = 1f;
+        _fuelAmount -= fuelConsumption * Time.fixedDeltaTime;
     }
 }
