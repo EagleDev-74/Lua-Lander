@@ -20,15 +20,16 @@ public class Lander : MonoBehaviour
     [SerializeField] private float force = 700f;
     [SerializeField] private float turnSpeedLeft = +100f;
     [SerializeField] private float turnSpeedRight = -100f;
-    private float _fuelAmount = 10f;
+    private float _fuelAmount;
+    private float _fuelAmountMax = 10f;
 
 
     private Rigidbody2D _landerRigidBody2D;
 
-
     private void Awake ()
     {
         Instance = this;
+        _fuelAmount = _fuelAmountMax;
         _landerRigidBody2D = GetComponent <Rigidbody2D> ();
     }
 
@@ -119,6 +120,10 @@ public class Lander : MonoBehaviour
         {
             const float addFuelAmount = 10f;
             _fuelAmount += addFuelAmount;
+            if ( _fuelAmount > _fuelAmountMax )
+            {
+                _fuelAmount = _fuelAmountMax;
+            }
             fuelPickUp.DestroySelf ();
         }
 
@@ -133,5 +138,25 @@ public class Lander : MonoBehaviour
     {
         float fuelConsumption = 1f;
         _fuelAmount -= fuelConsumption * Time.fixedDeltaTime;
+    }
+
+    public float GetFuelAmountNormalized ()
+    {
+        return _fuelAmount / _fuelAmountMax;
+    }
+
+public float GetSpeedX ()
+    {
+        return _landerRigidBody2D.linearVelocityX;
+    }
+
+    public float GetSpeedY ()
+    {
+        return _landerRigidBody2D.linearVelocityY;
+    }
+
+    public float GetFuel ()
+    {
+        return _fuelAmount; 
     }
 }
