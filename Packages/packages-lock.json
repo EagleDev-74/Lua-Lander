@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.awsurmi.utilitypackage": {
+    "com.awsurmi74.utilitypackage": {
       "version": "https://gitlab.com/aw.sur.mi.74/aw.sur.mi.74-utility.git",
       "depth": 0,
       "source": "git",
@@ -8,7 +8,7 @@
         "com.unity.textmeshpro": "3.0.6",
         "com.unity.inputsystem": "1.20.0"
       },
-      "hash": "4cdad9f63e58747f84a4513227ff6adcc038b5d2"
+      "hash": "b49605fab5095e2eeed9f58f730461da7afa31d1"
     },
     "com.unity.2d.animation": {
       "version": "16.0.0",
@@ -198,12 +198,10 @@
       "dependencies": {}
     },
     "com.unity.ide.rider": {
-      "version": "3.0.40",
+      "version": "3.1.0",
       "depth": 0,
       "source": "registry",
-      "dependencies": {
-        "com.unity.ext.nunit": "1.0.6"
-      },
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
