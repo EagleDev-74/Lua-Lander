@@ -14,7 +14,19 @@ public class Lander : MonoBehaviour
 
     public class OnLandedEventArguments : EventArgs
     {
+        public LandingType landingType;
         public int score;
+        public float landingSpeed;
+        public float dotVector;
+        public float scoreMultiplier;
+    }
+
+    public enum LandingType
+    {
+        Success,
+        TooFastLanding,
+        TooSteepAngle,
+        WrongLandingArea,
     }
 
     [SerializeField] private float force = 700f;
@@ -73,6 +85,14 @@ public class Lander : MonoBehaviour
         if (!other.gameObject.TryGetComponent (out LandingPad landingPad))
         {
             Debug.Log ("Crashed on the Terrain");
+            OnLanded?.Invoke (this, new OnLandedEventArguments
+            {
+                landingType = LandingType.WrongLandingArea,
+                landingSpeed = 0f,
+                dotVector = 0f,
+                scoreMultiplier = 0f,
+                score = 0,
+            });
             return;
         }
 
@@ -81,6 +101,14 @@ public class Lander : MonoBehaviour
         if (other.relativeVelocity.magnitude > softLandingVelocityMagnitude)
         {
             Debug.Log (" Landing too hard");
+            OnLanded?.Invoke (this, new OnLandedEventArguments
+            {
+                landingType = LandingType.TooFastLanding,
+                landingSpeed = relativeVelocityMagnitude,
+                dotVector = 0f,
+                scoreMultiplier = 0f,
+                score = 0,
+            });
             return;
         }
 
@@ -89,6 +117,14 @@ public class Lander : MonoBehaviour
         if (dotVector < minDotVector)
         {
             Debug.Log ("Landed on to steep angle");
+            OnLanded?.Invoke (this, new OnLandedEventArguments
+            {
+                landingType = LandingType.TooSteepAngle,
+                landingSpeed = relativeVelocityMagnitude,
+                dotVector = dotVector,
+                scoreMultiplier = 0f,
+                score = 0,
+            });
             return;
         }
 
@@ -96,12 +132,10 @@ public class Lander : MonoBehaviour
 
         const float maxScoreAmountLandingAngle = 100;
         const float scoreDotVectorMultiplayer = 10f;
-        float landingAngleScore = maxScoreAmountLandingAngle -
-                                  Mathf.Abs (dotVector - 1f) * scoreDotVectorMultiplayer * maxScoreAmountLandingAngle;
+        float landingAngleScore = maxScoreAmountLandingAngle - Mathf.Abs (dotVector - 1f) * scoreDotVectorMultiplayer * maxScoreAmountLandingAngle;
 
         const float maxScoreAmountLandingSpeed = 100;
-        float landingSpeedScore =
-            (softLandingVelocityMagnitude - relativeVelocityMagnitude) * maxScoreAmountLandingSpeed;
+        float landingSpeedScore = (softLandingVelocityMagnitude - relativeVelocityMagnitude) * maxScoreAmountLandingSpeed;
 
         Debug.Log ("Landing Angle : ".Blue (bold: true) + landingAngleScore);
         Debug.Log ("Landing Speed : ".Blue (bold: true) + landingSpeedScore);
@@ -110,6 +144,10 @@ public class Lander : MonoBehaviour
         Debug.Log ("Score : ".Red (bold: true) + score);
         OnLanded?.Invoke (this, new OnLandedEventArguments
         {
+            landingType = LandingType.Success,
+            landingSpeed = relativeVelocityMagnitude,
+            dotVector = dotVector,
+            scoreMultiplier = landingPad.GetScoreMultiplier (),
             score = score,
         });
     }
@@ -120,10 +158,11 @@ public class Lander : MonoBehaviour
         {
             const float addFuelAmount = 10f;
             _fuelAmount += addFuelAmount;
-            if ( _fuelAmount > _fuelAmountMax )
+            if (_fuelAmount > _fuelAmountMax)
             {
                 _fuelAmount = _fuelAmountMax;
             }
+
             fuelPickUp.DestroySelf ();
         }
 
@@ -145,7 +184,7 @@ public class Lander : MonoBehaviour
         return _fuelAmount / _fuelAmountMax;
     }
 
-public float GetSpeedX ()
+    public float GetSpeedX ()
     {
         return _landerRigidBody2D.linearVelocityX;
     }
@@ -157,6 +196,6 @@ public float GetSpeedX ()
 
     public float GetFuel ()
     {
-        return _fuelAmount; 
+        return _fuelAmount;
     }
 }
