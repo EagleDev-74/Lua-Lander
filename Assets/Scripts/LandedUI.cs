@@ -1,17 +1,22 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LandedUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI titleTextMesh;
     [SerializeField] private TextMeshProUGUI stateTextMesh;
+    [SerializeField] private Button nextButton;
 
     private void Awake ()
     {
-        Log.UsePrefix = false;
+        nextButton.onClick.AddListener (() =>
+        {
+            SceneManager.LoadScene (0);
+        });
     }
-
     private void Start ()
     {
         Lander.Instance.OnLanded += Lander_OnLanded;
@@ -26,7 +31,7 @@ public class LandedUI : MonoBehaviour
         }
         else
         {
-            titleTextMesh.SetText ("CRASHED!".Red ());
+            titleTextMesh.SetText ("CRASHED!".Red (prefix: false));
         }
 
         stateTextMesh.SetText ($"{Mathf.Round (e.landingSpeed)}\n" +
