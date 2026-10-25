@@ -1,14 +1,23 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Object = System.Object;
 
 public class Lander : MonoBehaviour
 {
     public static Lander Instance { get; private set; }
+    
     public event EventHandler OnUpForce;
     public event EventHandler OnLeftForce;
     public event EventHandler OnRightForce;
     public event EventHandler OnBeforeForce;
+    public event EventHandler <OnStateChangedEventArgs> OnStateChanged;
+
+    public class OnStateChangedEventArgs : EventArgs
+    {
+        public State state;
+    }
+    
     public event EventHandler OnCoinPickUp;
     public event EventHandler <OnLandedEventArguments> OnLanded;
 
@@ -29,13 +38,24 @@ public class Lander : MonoBehaviour
         WrongLandingArea,
     }
 
+    public enum State
+    {
+        WaitingToStart,
+        Normal,
+        GameOver,
+    }
+    
+    private const float GRAVITY_NORMAL = 0.7f;
+
     [SerializeField] private float force = 700f;
     [SerializeField] private float turnSpeedLeft = +100f;
     [SerializeField] private float turnSpeedRight = -100f;
+    
     private float _fuelAmount;
     private float _fuelAmountMax = 10f;
-
-
+    
+    private State _state;
+    
     private Rigidbody2D _landerRigidBody2D;
 
     private void Awake ()
@@ -43,40 +63,61 @@ public class Lander : MonoBehaviour
         Instance = this;
         _fuelAmount = _fuelAmountMax;
         _landerRigidBody2D = GetComponent <Rigidbody2D> ();
+        _landerRigidBody2D.gravityScale = 0f;
+        _state = State.WaitingToStart;
     }
 
     private void FixedUpdate ()
     {
         OnBeforeForce?.Invoke (this, EventArgs.Empty);
 
-        if (Keyboard.current.wKey.isPressed || Keyboard.current.aKey.isPressed || Keyboard.current.dKey.isPressed)
+        switch (_state)
         {
-            // if any key is pressed
-            FuelConsumption ();
-        }
+            default:
+            case State.WaitingToStart:
+                if (Keyboard.current.wKey.isPressed || Keyboard.current.aKey.isPressed || Keyboard.current.dKey.isPressed)
+                {
+                    // if any key is pressed
+                    _landerRigidBody2D.gravityScale = GRAVITY_NORMAL;
+                    _state = State.Normal;
+                    SetActive (State.Normal);
+                }
+                break;
+            
+            case State.Normal:
+                if (Keyboard.current.wKey.isPressed || Keyboard.current.aKey.isPressed || Keyboard.current.dKey.isPressed)
+                {
+                    // if any key is pressed
+                    FuelConsumption ();
+                }
 
-        if (_fuelAmount <= 0)
-        {
-            // no fuel
-            return;
-        }
+                if (_fuelAmount <= 0)
+                {
+                    // no fuel
+                    return;
+                }
 
-        if (Keyboard.current.wKey.isPressed)
-        {
-            _landerRigidBody2D.AddForce (transform.up * (force * Time.fixedDeltaTime));
-            OnUpForce?.Invoke (this, EventArgs.Empty);
-        }
+                if (Keyboard.current.wKey.isPressed)
+                {
+                    _landerRigidBody2D.AddForce (transform.up * (force * Time.fixedDeltaTime));
+                    OnUpForce?.Invoke (this, EventArgs.Empty);
+                }
 
-        if (Keyboard.current.aKey.isPressed)
-        {
-            _landerRigidBody2D.AddTorque (turnSpeedLeft * Time.fixedDeltaTime);
-            OnLeftForce?.Invoke (this, EventArgs.Empty);
-        }
+                if (Keyboard.current.aKey.isPressed)
+                {
+                    _landerRigidBody2D.AddTorque (turnSpeedLeft * Time.fixedDeltaTime);
+                    OnLeftForce?.Invoke (this, EventArgs.Empty);
+                }
 
-        if (Keyboard.current.dKey.isPressed)
-        {
-            _landerRigidBody2D.AddTorque (turnSpeedRight * Time.fixedDeltaTime);
-            OnRightForce?.Invoke (this, EventArgs.Empty);
+                if (Keyboard.current.dKey.isPressed)
+                {
+                    _landerRigidBody2D.AddTorque (turnSpeedRight * Time.fixedDeltaTime);
+                    OnRightForce?.Invoke (this, EventArgs.Empty);
+                } 
+                break;
+            
+            case State.GameOver:
+                break;
         }
     }
 
@@ -93,6 +134,7 @@ public class Lander : MonoBehaviour
                 scoreMultiplier = 0f,
                 score = 0,
             });
+            SetActive (State.GameOver);
             return;
         }
 
@@ -109,6 +151,7 @@ public class Lander : MonoBehaviour
                 scoreMultiplier = 0f,
                 score = 0,
             });
+            SetActive (State.GameOver);
             return;
         }
 
@@ -125,6 +168,7 @@ public class Lander : MonoBehaviour
                 scoreMultiplier = 0f,
                 score = 0,
             });
+            SetActive (State.GameOver);
             return;
         }
 
@@ -149,6 +193,16 @@ public class Lander : MonoBehaviour
             dotVector = dotVector,
             scoreMultiplier = landingPad.GetScoreMultiplier (),
             score = score,
+        });
+        SetActive (State.GameOver);
+    }
+
+    private void SetActive (State state)
+    { 
+        _state = state;
+        OnStateChanged?.Invoke (this, new OnStateChangedEventArgs
+        {
+            state = _state,
         });
     }
 
